@@ -779,8 +779,9 @@ function startRecording_(seg, seq){
   showRecordingUI_();
   startRecorderInternal_();
 
-  // If the recorder stops emitting data (observed occasionally on Chromebooks),
-  // restart it rather than losing the segment.
+  // Precaution: the browser gives no signal when MediaRecorder stalls, so watch
+  // for a gap in the data stream and restart. Note that a restart writes a second
+  // WebM header into the same file, which some players will not read past.
   clearInterval(watchdogTimer);
   watchdogTimer = setInterval(() => {
     if (!recordingActive || !recorder) return;
